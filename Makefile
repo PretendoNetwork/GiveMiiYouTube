@@ -11,6 +11,7 @@ TOPDIR ?= $(CURDIR)
 include $(DEVKITPRO)/wups/share/wups_rules
 
 WUT_ROOT := $(DEVKITPRO)/wut
+WUMS_ROOT := $(DEVKITPRO)/wums
 #-------------------------------------------------------------------------------
 # TARGET is the name of the output
 # BUILD is the directory where object files & intermediate files will be placed
@@ -20,9 +21,9 @@ WUT_ROOT := $(DEVKITPRO)/wut
 #-------------------------------------------------------------------------------
 TARGET		:=	$(notdir $(CURDIR))
 BUILD		:=	build
-SOURCES		:=	.
+SOURCES		:=	source source/patcher
 DATA		:=	data
-INCLUDES	:=	
+INCLUDES	:=	source
 
 #-------------------------------------------------------------------------------
 # options for code generation
@@ -32,18 +33,18 @@ CFLAGS	:=	-Wall -O2 -ffunction-sections \
 
 CFLAGS	+=	$(INCLUDE) -D__WIIU__ -D__WUT__ -D__WUPS__ 
 
-CXXFLAGS	:= $(CFLAGS)
+CXXFLAGS	:= $(CFLAGS) -std=gnu++20
 
 ASFLAGS	:=	$(ARCH)
-LDFLAGS	=	$(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map) $(WUPSSPECS) 
+LDFLAGS	=	$(ARCH) $(RPXSPECS) -Wl,-Map,$(notdir $*.map) -T$(WUMS_ROOT)/share/libkernel.ld $(WUPSSPECS) 
 
-LIBS	:= -lwups -lwut 
+LIBS	:= -lkernel -lwups -lwut 
 
 #-------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level
 # containing include and lib
 #-------------------------------------------------------------------------------
-LIBDIRS	:= $(PORTLIBS) $(WUPS_ROOT) $(WUT_ROOT)
+LIBDIRS	:= $(PORTLIBS) $(WUMS_ROOT) $(WUPS_ROOT) $(WUT_ROOT)
 
 #-------------------------------------------------------------------------------
 # no real need to edit anything past this point unless you need to add additional
